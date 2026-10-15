@@ -1,9 +1,11 @@
-from textnode import TextNode, TextType
+from markdownhelper import text_to_text_nodes
 
 
 def main():
-    node = TextNode("This is some anchor text", TextType.LINK, "https://www.boot.dev")
-    print(node)
 
+    text = "This is **text** with an _italic_ word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
+    textNodes = text_to_text_nodes(text)
+
+    print(textNodes)
 
 main()
