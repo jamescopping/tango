@@ -1,8 +1,8 @@
 import re
 from enum import Enum
 
-from src.html_node import HTMLNode
-from src.parent_node import ParentNode
+from html_node import HTMLNode
+from parent_node import ParentNode
 from text_node import TextNode, TextType, text_node_to_html_node
 
 RE_HEADING_PATTERN = r"^(#{1,6}) (.*)$"
@@ -180,11 +180,12 @@ def code_block_html_node(block: str) -> ParentNode:
 
 
 def quote_block_html_node(block: str) -> ParentNode:
-    result = re.match(RE_QUOTE_PARTTERN, block)
+    result = re.match(r"^\> ?([\s\S]*)", block)
     if not result:
         raise ValueError(f"Error: BlockType QUOTE regex match failed on {block}")
 
     quote_text = result.group(1)
+    quote_text = quote_text.replace(">", "")
     children = inline_markdown_to_child_nodes(quote_text)
     return ParentNode("blockquote", children)
 
@@ -245,3 +246,11 @@ def block_to_html_node(block: str) -> ParentNode:
     if block_type == BlockType.ORDERED_LIST:
         return ordered_list_block_html_node(block)
     raise ValueError("Error: invalid block type")
+
+
+def extract_title(markdown: str):
+    result = re.match(r"#{1} (.*)", markdown)
+    if result:
+        return result.group(1).strip()
+    else:
+        raise ValueError("Error: title missing")

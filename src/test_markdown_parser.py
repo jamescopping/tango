@@ -4,6 +4,7 @@ import unittest.util
 from markdown_parser import (
     extract_markdown_images,
     extract_markdown_links,
+    extract_title,
     markdown_to_blocks,
     split_nodes_delimiter,
     split_nodes_image,
@@ -547,6 +548,31 @@ Another paragraph
             ],
         )
 
+    def test_extract_valid_title(self):
+        self.assertEqual(extract_title("# My Title"), "My Title")
 
+    def test_extract_title_strips_whitespace(self):
+        self.assertEqual(extract_title("#   My Title   "), "My Title")
+
+    def test_extract_empty_title(self):
+        self.assertEqual(extract_title("# "), "")
+
+    def test_raises_when_no_heading(self):
+        with self.assertRaises(ValueError) as context:
+            extract_title("My Title")
+
+        self.assertEqual(str(context.exception), "Error: title missing")
+
+    def test_raises_for_h2_heading(self):
+        with self.assertRaises(ValueError):
+            extract_title("## My Title")
+
+    def test_raises_for_empty_string(self):
+        with self.assertRaises(ValueError):
+            extract_title("")
+
+    def test_raises_when_heading_not_at_start(self):
+        with self.assertRaises(ValueError):
+            extract_title("text\n# My Title")
 if __name__ == "__main__":
     unittest.main()
