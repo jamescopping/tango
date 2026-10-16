@@ -1,6 +1,17 @@
 import re
+from enum import Enum
 
-from textnode import TextNode, TextType
+from src.html_node import HTMLNode
+from text_node import TextNode, TextType
+
+
+class BlockType(Enum):
+    PARAGRAPH = "paragraph"
+    HEADING = "heading"
+    CODE = "code"
+    QUOTE = "quote"
+    UNORDERED_LIST = "unordered_list"
+    ORDERED_LIST = "ordered_list"
 
 
 def text_to_text_nodes(text: str) -> list[TextNode]:
@@ -103,3 +114,37 @@ def extract_markdown_links(text: str) -> list[tuple[str, str]]:
 
 def extract_markdown_images(text: str) -> list[tuple[str, str]]:
     return re.findall(r"\!\[(.*?)\]\((.*?)\)", text)
+
+
+def markdown_to_blocks(markdown: str) -> list[str]:
+    blocks = [block.strip() for block in markdown.split("\n\n")]
+    return [block for block in blocks if block]
+
+
+def block_to_block_type(block: str) -> BlockType:
+    # heading
+    if re.match(r"^#{1,6} .*$", block):
+        return BlockType.HEADING
+    # multiline code
+    if re.match(r"^`{3}(.*)[\s\S]*`{3}$", block):
+        return BlockType.CODE
+    # multiline quote
+    if re.match(r"^\> ?[\s\S]*", block):
+        return BlockType.QUOTE
+    # unordered list
+    if re.match(r"([\-] .*)+", block):
+        return BlockType.UNORDERED_LIST
+    # unordered list
+    if re.match(r"(\d+\. .*)+", block):
+        return BlockType.ORDERED_LIST
+
+    return BlockType.PARAGRAPH
+
+def markdown_to_html_node(markdown:str) -> HTMLNode:
+    parent_node = HTMLNode("body", children=[])
+
+    blocks = markdown_to_blocks(markdown)
+
+    
+    
+    return parent_node

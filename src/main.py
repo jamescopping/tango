@@ -1,4 +1,4 @@
-from markdownhelper import text_to_text_nodes
+from markdown_parser import text_to_text_nodes
 
 
 def main():

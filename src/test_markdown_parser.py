@@ -1,17 +1,23 @@
 import unittest
+import unittest.util
 
-from markdownhelper import (
+from markdown_parser import (
     extract_markdown_images,
     extract_markdown_links,
+    markdown_to_blocks,
     split_nodes_delimiter,
     split_nodes_image,
     split_nodes_link,
     text_to_text_nodes,
 )
-from textnode import TextNode, TextType
+from text_node import TextNode, TextType
+
+unittest.util._MAX_LENGTH = 999999999
 
 
-class TestMarkdownHelper(unittest.TestCase):
+class TestMarkdownParser(unittest.TestCase):
+    maxDiff = None
+
     def test_split_code(self):
         node = TextNode("This is text with a `code block` word", TextType.TEXT)
         new_nodes = split_nodes_delimiter([node], "`", TextType.CODE)
@@ -426,6 +432,120 @@ class TestMarkdownHelper(unittest.TestCase):
             TextNode("italic", TextType.ITALIC),
         ]
         self.assertEqual(text_to_text_nodes(text), expected)
+
+    def test_markdown_to_blocks(self):
+        md = """
+This is **bolded** paragraph
+
+This is another paragraph with _italic_ text and `code` here
+This is the same paragraph on a new line
+
+- This is a list
+- with items
+        """
+        blocks = markdown_to_blocks(md)
+        self.assertEqual(
+            blocks,
+            [
+                "This is **bolded** paragraph",
+                "This is another paragraph with _italic_ text and `code` here\nThis is the same paragraph on a new line",
+                "- This is a list\n- with items",
+            ],
+        )
+
+    def test_single_paragraph(self):
+        md = "This is a single paragraph."
+
+        blocks = markdown_to_blocks(md)
+
+        self.assertEqual(
+            blocks,
+            ["This is a single paragraph."],
+        )
+
+    def test_multiple_paragraphs(self):
+        md = """
+First paragraph
+
+Second paragraph
+
+Third paragraph
+    """
+
+        blocks = markdown_to_blocks(md)
+
+        self.assertEqual(
+            blocks,
+            [
+                "First paragraph",
+                "Second paragraph",
+                "Third paragraph",
+            ],
+        )
+
+    def test_extra_whitespace_between_blocks(self):
+        md = """
+First paragraph
+
+
+Second paragraph
+
+
+
+Third paragraph
+    """
+
+        blocks = markdown_to_blocks(md)
+
+        self.assertEqual(
+            blocks,
+            [
+                "First paragraph",
+                "Second paragraph",
+                "Third paragraph",
+            ],
+        )
+
+    def test_heading_block(self):
+        md = """
+# Heading 1
+
+## Heading 2
+
+Regular paragraph
+    """
+
+        blocks = markdown_to_blocks(md)
+
+        self.assertEqual(
+            blocks,
+            [
+                "# Heading 1",
+                "## Heading 2",
+                "Regular paragraph",
+            ],
+        )
+
+    def test_code_block(self):
+        md = """
+Here is some code
+
+```python
+print("hello")
+print("world")
+```
+
+Another paragraph
+            """
+        blocks = markdown_to_blocks(md)
+        self.assertEqual(
+            blocks,
+            [
+                "Here is some code",
+                '```python\nprint("hello")\nprint("world")\n```',
+                "Another paragraph",
+            ],
+        )
 
 
 if __name__ == "__main__":
