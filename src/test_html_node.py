@@ -27,7 +27,7 @@ class TestHTMLNode(unittest.TestCase):
 
         self.assertEqual(
             node1.__repr__(),
-            "HTMLNode(ul, None, [HTMLNode(li, value111, None, None), HTMLNode(li, value222, None, None), HTMLNode(li, value333, None, None), HTMLNode(li, value444, None, None)], None)",
+            "HTMLNode(ul, None, [HTMLNode(li, value111, [], None), HTMLNode(li, value222, [], None), HTMLNode(li, value333, [], None), HTMLNode(li, value444, [], None)], None)",
         )
 
     def test_tag(self):
@@ -35,7 +35,7 @@ class TestHTMLNode(unittest.TestCase):
         node1 = HTMLNode("value111")
         self.assertEqual(
             node1.__repr__(),
-            "HTMLNode(value111, None, None, None)",
+            "HTMLNode(value111, None, [], None)",
         )
 
 

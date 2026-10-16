@@ -6,6 +6,8 @@ class HTMLNode:
         children: list["HTMLNode"] | None = None,
         props: dict[str, str] | None = None,
     ) -> None:
+        if children is None:
+            children = []
         self.tag = tag
         self.value = value
         self.children = children
