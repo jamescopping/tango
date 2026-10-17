@@ -1,6 +1,6 @@
 import argparse
 
-from static_site_generator import (
+from src.static_site_generator import (
     copy_source_dir_to_target_dir,
     generate_pages_recursive,
     purge_dir,

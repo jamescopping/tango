@@ -1,6 +1,6 @@
 import unittest
 
-from markdown_parser import (
+from src.markdown_parser import (
     BlockType,
     block_to_block_type,
     block_to_html_node,

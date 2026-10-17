@@ -1,9 +1,9 @@
 import re
 from enum import Enum
 
-from html_node import HTMLNode
-from parent_node import ParentNode
-from text_node import TextNode, TextType, text_node_to_html_node
+from src.nodes.html_node import HTMLNode
+from src.nodes.parent_node import ParentNode
+from src.nodes.text_node import TextNode, TextType, text_node_to_html_node
 
 RE_HEADING_PATTERN = r"^(#{1,6}) (.*)$"
 RE_CODE_PATTERN = r"^`{3}(.*)([\s\S]*)`{3}$"

@@ -1,7 +1,7 @@
 import unittest
 import unittest.util
 
-from markdown_parser import (
+from src.markdown_parser import (
     extract_markdown_images,
     extract_markdown_links,
     extract_title,
@@ -11,7 +11,7 @@ from markdown_parser import (
     split_nodes_link,
     text_to_text_nodes,
 )
-from text_node import TextNode, TextType
+from src.nodes.text_node import TextNode, TextType
 
 unittest.util._MAX_LENGTH = 999999999
 
@@ -574,5 +574,7 @@ Another paragraph
     def test_raises_when_heading_not_at_start(self):
         with self.assertRaises(ValueError):
             extract_title("text\n# My Title")
+
+
 if __name__ == "__main__":
     unittest.main()
