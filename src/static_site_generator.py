@@ -5,7 +5,7 @@ from markdown_parser import extract_title, markdown_to_html_node
 
 
 def generate_pages_recursive(
-    dir_path_content: str, template_path: str, dest_dir_path: str
+    dir_path_content: str, template_path: str, dest_dir_path: str, base_path: str
 ):
     if not os.path.exists(dir_path_content):
         raise ValueError(
@@ -21,12 +21,12 @@ def generate_pages_recursive(
         item_path = os.path.join(dir_path_content, item)
         new_dest_path = os.path.join(dest_dir_path, item)
         if os.path.isfile(item_path):
-            generate_page(item_path, template_path, new_dest_path)
+            generate_page(item_path, template_path, new_dest_path, base_path)
         else:
-            generate_pages_recursive(item_path, template_path, new_dest_path)
+            generate_pages_recursive(item_path, template_path, new_dest_path, base_path)
 
 
-def generate_page(from_path: str, template_path: str, dest_path: str):
+def generate_page(from_path: str, template_path: str, dest_path: str, base_path: str):
     print(f"Generating page from {from_path} to {dest_path} using {template_path}")
 
     with open(from_path) as markdown_fd:
@@ -53,6 +53,10 @@ def generate_page(from_path: str, template_path: str, dest_path: str):
     page = template_contents.replace("{{ Title }}", title)
     page = page.replace("{{ Content }}", html_content)
     print("DONE")
+    print(f"Replacing href, src urls with {base_path}...", end="")
+    page = page.replace('href="/', f'href="{base_path}')
+    page = page.replace('src="/', f'src="{base_path}')
+    print("DONE")
 
     path = os.path.dirname(dest_path)
     print("Creating destination directories...", end="")
@@ -64,6 +68,7 @@ def generate_page(from_path: str, template_path: str, dest_path: str):
         print(f"Creating {filename}...", end="")
         html_file.write(page)
         print("DONE")
+
 
 def purge_dir(dir_path: str):
     shutil.rmtree(dir_path, True)
