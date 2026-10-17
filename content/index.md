@@ -1,4 +1,4 @@
-# Sarah Fan Club
+# Tolkien Fan Club
 
 ![JRR Tolkien sitting](/images/tolkien.png)
 
