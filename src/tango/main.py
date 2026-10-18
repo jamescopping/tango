@@ -106,7 +106,7 @@ def build_site(site_root: str, dev_mode: bool = False):
 
     config = load_config(site_root)
 
-    base_path = config["deployment"]["base_path"]
+    base_path = "/" if dev_mode else config["deployment"]["base_path"]
 
     header("Tango Build")
     info(f"Title: {config['title']}")
