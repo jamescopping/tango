@@ -1,12 +1,17 @@
 import os
 import shutil
 
+from .live_reload import LIVE_RELOAD_SCRIPT
 from .logger import info, success
 from .markdown_parser import extract_title, markdown_to_html_node
 
 
 def generate_pages_recursive(
-    dir_path_content: str, template_path: str, dest_dir_path: str, base_path: str
+    dir_path_content: str,
+    template_path: str,
+    dest_dir_path: str,
+    base_path: str,
+    dev_mode: bool = False,
 ):
     if not os.path.exists(dir_path_content):
         raise ValueError(
@@ -22,12 +27,20 @@ def generate_pages_recursive(
         item_path = os.path.join(dir_path_content, item)
         new_dest_path = os.path.join(dest_dir_path, item)
         if os.path.isfile(item_path):
-            generate_page(item_path, template_path, new_dest_path, base_path)
+            generate_page(item_path, template_path, new_dest_path, base_path, dev_mode)
         else:
-            generate_pages_recursive(item_path, template_path, new_dest_path, base_path)
+            generate_pages_recursive(
+                item_path, template_path, new_dest_path, base_path, dev_mode
+            )
 
 
-def generate_page(from_path: str, template_path: str, dest_path: str, base_path: str):
+def generate_page(
+    from_path: str,
+    template_path: str,
+    dest_path: str,
+    base_path: str,
+    dev_mode: bool = False,
+):
     info(f"Generating page from {from_path}")
 
     with open(from_path) as markdown_fd:
@@ -44,6 +57,9 @@ def generate_page(from_path: str, template_path: str, dest_path: str, base_path:
     page = page.replace("{{ Content }}", html_content)
     page = page.replace('href="/', f'href="{base_path}')
     page = page.replace('src="/', f'src="{base_path}')
+
+    if dev_mode:
+        page = page.replace("</body>", f"{LIVE_RELOAD_SCRIPT}</body>")
 
     path = os.path.dirname(dest_path)
     os.makedirs(path, exist_ok=True)

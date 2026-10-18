@@ -10,6 +10,7 @@ from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
 
 from .config import load_config
+from .live_reload import start_live_reload_server, trigger_reload
 from .logger import error, header, info
 from .static_site_generator import (
     copy_source_dir_to_target_dir,
@@ -46,7 +47,7 @@ dev_parser.add_argument(
 )
 
 def dev_site(site_root: str, port: str):
-    build_site(site_root)
+    build_site(site_root, True)
 
     server_thread = threading.Thread(
         target=serve_site,
@@ -73,10 +74,17 @@ def dev_site(site_root: str, port: str):
     )
 
     content_dir = f"{site_root}/content"
-    static_dir = "{site_root}/static"
+    static_dir = f"{site_root}/static"
 
     info(f"Watching {content_dir}")
     info(f"Watching {static_dir}")
+
+    reload_thread = threading.Thread(
+        target=start_live_reload_server,
+        daemon=True,
+    )
+
+    reload_thread.start()
 
     observer.start()
 
@@ -89,7 +97,7 @@ def dev_site(site_root: str, port: str):
     observer.join()
 
 
-def build_site(site_root: str):
+def build_site(site_root: str, dev_mode: bool = False):
 
     output_dir = f"{site_root}/docs"
     static_dir = f"{site_root}/static"
@@ -109,10 +117,7 @@ def build_site(site_root: str):
     purge_output_dir(output_dir)
     copy_source_dir_to_target_dir(static_dir, output_dir)
     generate_pages_recursive(
-        content_dir,
-        html_template,
-        output_dir,
-        base_path,
+        content_dir, html_template, output_dir, base_path, dev_mode
     )
 
 
@@ -164,8 +169,9 @@ class TangoFileHandler(FileSystemEventHandler):
         info(f"Detected change: {event.src_path}")
 
         try:
-            build_site(self.site_root)
-        except Exception as e:
+            build_site(self.site_root, True)
+            trigger_reload()
+        except Exception as e:  # noqa: BLE001
             error(str(e))
 
 
