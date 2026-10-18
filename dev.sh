@@ -1,3 +1,9 @@
-python3 src/main.py "/"
+#!/bin/bash
+
+SITE="sites/tolkien-fan-club"
+
+python3 src/main.py "$SITE" "/"
+
 echo "Starting server..."
-cd docs && python3 -m http.server 8888
+
+cd "$SITE/docs" && python3 -m http.server 8888

@@ -1,7 +1,7 @@
 import os
 import shutil
 
-from src.markdown_parser import extract_title, markdown_to_html_node
+from .markdown_parser import extract_title, markdown_to_html_node
 
 
 def generate_pages_recursive(

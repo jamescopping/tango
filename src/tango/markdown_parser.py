@@ -1,9 +1,9 @@
 import re
 from enum import Enum
 
-from src.nodes.html_node import HTMLNode
-from src.nodes.parent_node import ParentNode
-from src.nodes.text_node import TextNode, TextType, text_node_to_html_node
+from .nodes.html_node import HTMLNode
+from .nodes.parent_node import ParentNode
+from .nodes.text_node import TextNode, TextType, text_node_to_html_node
 
 RE_HEADING_PATTERN = r"^(#{1,6}) (.*)$"
 RE_CODE_PATTERN = r"^`{3}(.*)([\s\S]*)`{3}$"
@@ -147,6 +147,7 @@ def block_to_block_type(block: str) -> BlockType:
 
     return BlockType.PARAGRAPH
 
+
 def paragraph_block_html_node(block: str) -> ParentNode:
     children = inline_markdown_to_child_nodes(block)
     return ParentNode("p", children)
@@ -222,13 +223,14 @@ def inline_markdown_to_child_nodes(markdown: str) -> list[HTMLNode]:
     ]
 
 
-def markdown_to_html_node(markdown:str) -> HTMLNode:
+def markdown_to_html_node(markdown: str) -> HTMLNode:
     children: list[HTMLNode] = []
     blocks = markdown_to_blocks(markdown)
     for block in blocks:
         html_node = block_to_html_node(block)
         children.append(html_node)
     return ParentNode("div", children=children)
+
 
 def block_to_html_node(block: str) -> ParentNode:
 
